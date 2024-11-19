@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.function.BiConsumer;
+import org.w3c.dom.Node;
 
 /**
  * A simple implementation of binary search trees.
@@ -89,8 +90,29 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    */
   @Override
   public V set(K key, V value) {
-    return null;        // STUB
+    this.root = helperSet(this.root, key, value);
+    return this.cachedValue;
   } // set(K, V)
+
+  private BSTNode<K,V> helperSet(BSTNode<K,V> node, K key, V value){
+    if (node == null) {
+      this.cachedValue = null;
+      this.size++;
+      return new BSTNode<K,V>(key, value);
+    }
+    else if (order.compare(key,node.key) < 0) {
+      node.left = helperSet(node.left, key, value);
+    }
+    else if (order.compare(key,node.key) > 0) {
+      node.right = helperSet(node.right, key, value);
+
+    } else {// key == node.key
+      this.cachedValue = node.value;
+      node.value = value;
+    }
+    return node;
+  }
+
 
   /**
    * Get the value associated with key.
@@ -210,7 +232,12 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    */
   @Override
   public void forEach(BiConsumer<? super K, ? super V> action) {
-    // STUB
+    Iterator<BSTNode<K, V>> iterator = nodes();
+    BSTNode<K, V> node = this.root;
+    while (iterator.hasNext()) {
+      action.accept(node.key, node.value);
+      node = iterator.next();
+    } // while
   } // forEach
 
   // +----------------------+----------------------------------------
